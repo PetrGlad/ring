@@ -2,14 +2,15 @@
   "Middleware to return a 304 Not Modified response."
   (:use [ring.util.time :only (parse-date)]
         [ring.util.response :only (status)]
-        [ring.util.io :only (close!)]))
+        [ring.util.io :only (close!)]
+        [ring.util.headers :only (get-header)]))
 
 (defn- etag-match? [request response]
   (if-let [etag (get-in response [:headers "etag"])]
     (= etag (get-in request [:headers "if-none-match"]))))
 
 (defn- ^java.util.Date date-header [response header]
-  (if-let [http-date (get-in response [:headers header])]
+  (if-let [http-date (get-header response header)]
     (parse-date http-date)))
 
 (defn- not-modified-since? [request response]
