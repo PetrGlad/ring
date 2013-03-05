@@ -26,9 +26,11 @@
       (is (= 304 (:status (h (etag-request "\"12345\"")))))
       (is (= 200 (:status (h (etag-request "\"abcde\"")))))))
   (testing "last-modified"
-    (let [h (wrap-not-modified (handler-modified "Sun, 23 Sep 2012 10:52:50 GMT"))]
-      (is (= 304 (:status (h (modified-request "Sun, 23 Sep 2012 10:00:00 GMT")))))
-      (is (= 200 (:status (h (modified-request "Sun, 23 Sep 2012 11:00:00 GMT")))))))
+    (let [baseline "Sun, 23 Sep 2012 10:00:00 GMT" 
+          h (wrap-not-modified (handler-modified baseline))]
+      (is (= 304 (:status (h (modified-request baseline)))))
+      (is (= 304 (:status (h (modified-request "Sun, 23 Sep 2012 11:00:00 GMT")))))
+      (is (= 200 (:status (h (modified-request "Sun, 23 Sep 2012 09:52:50 GMT")))))))
   (testing "no modified info"
     (let [h (wrap-not-modified (constantly {:status 200 :headers {} :body ""}))]
       (is (= 200 (:status (h (etag-request "\"12345\"")))))
@@ -44,13 +46,11 @@
         h-resp {:status 200 :headers {"etag" "no-match"} :body ""}]
     (is (= 200 (:status (not-modified-response h-resp req))))))
 
-(deftest not-modified-response-expired
-  (let [req    {:headers {"if-modified-since"         "Sun, 23 Sep 2012 10:52:50 GMT"}}
-        h-resp {:status 200 :headers {"last-modified" "Sun, 23 Sep 2012 10:00:00 GMT"} :body ""}]
-    (is (= 200 (:status (not-modified-response h-resp req))))))
-
-(deftest not-modified-response-current
-  (let [req    {:headers {"if-modified-since"         "Sun, 23 Sep 2012 10:52:50 GMT"}}
-        h-resp {:status 200 :headers {"last-modified" "Sun, 23 Sep 2012 11:00:00 GMT"} :body ""}]
-    (is (= 304 (:status (not-modified-response h-resp req))))))
+(deftest not-modified-response
+  (let [req    #(hash-map :headers {"if-modified-since" %})
+        last-modified "Sun, 23 Sep 2012 11:00:00 GMT"
+        h-resp {:status 200 :headers {"last-modified" last-modified} :body ""}]
+    (is (= 304 (:status (not-modified-response h-resp (req baseline)))))
+    (is (= 304 (:status (not-modified-response h-resp (req "Sun, 23 Sep 2012 11:52:50 GMT")))))
+    (is (= 200 (:status (not-modified-response h-resp (req "Sun, 23 Sep 2012 10:00:50 GMT")))))))
 
