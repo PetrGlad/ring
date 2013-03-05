@@ -25,16 +25,16 @@
     (let [req (modified-request "Sun, 23 Sep 2012 11:00:00 GMT")
           handler (handler-modified "Jan, 23 Sep 2012 11:00:00 GMT")]
       (is (= [(handler req) req] 
-            ((wrap-not-modified handler) req))))))
+             ((wrap-not-modified handler) req))))))
 
 (deftest test-not-modified-response  
   (testing "etag match"
-    (let [request-etag "match"
-          req {:headers {"if-none-match" request-etag}}
-          handler-resp #(hash-map :status 200 :headers {"etag" %} :body "")]
-      (is (= 304 (:status (not-modified-response (handler-resp request-etag) req))))
-      (is (= 200 (:status (not-modified-response (handler-resp "laskdhfskljahdflksjdhf") req))))))
-    
+           (let [request-etag "match"
+                 req {:headers {"if-none-match" request-etag}}
+                 handler-resp #(hash-map :status 200 :headers {"etag" %} :body "")]
+             (is (= 304 (:status (not-modified-response (handler-resp request-etag) req))))
+             (is (= 200 (:status (not-modified-response (handler-resp "laskdhfskljahdflksjdhf") req))))))
+  
   (testing "not modified"
     (let [req #(hash-map :headers {"if-modified-since" %})
           last-modified "Sun, 23 Sep 2012 11:00:00 GMT"
@@ -44,6 +44,6 @@
       (is (= 200 (:status (not-modified-response h-resp (req "Sun, 23 Sep 2012 10:00:50 GMT")))))))
   
   (testing "no modification info"
-    (let [response {:status 200 :headers {} :body ""}]
-      (is (= 200 (:status (not-modified-response response (etag-request "\"12345\"")))))
-      (is (= 200 (:status (not-modified-response response (modified-request "Sun, 23 Sep 2012 10:00:00 GMT"))))))))
+           (let [response {:status 200 :headers {} :body ""}]
+             (is (= 200 (:status (not-modified-response response (etag-request "\"12345\"")))))
+             (is (= 200 (:status (not-modified-response response (modified-request "Sun, 23 Sep 2012 10:00:00 GMT"))))))))

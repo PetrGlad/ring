@@ -17,8 +17,8 @@
         modified-since (date-header request "if-modified-since")]
     ; TODO Response headers lookup may not work since in map header is Camel-Cased and in fn call it is all lowercase
     (and modified-date
-      modified-since
-      (not (.before modified-since modified-date)))))
+         modified-since
+         (not (.before modified-since modified-date)))))
 
 (defn not-modified-response
   "Returns 304 or original response based on response and request."
