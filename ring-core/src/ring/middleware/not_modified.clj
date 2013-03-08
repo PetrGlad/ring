@@ -13,7 +13,7 @@
     (parse-date http-date)))
 
 (defn- not-modified-since? [request response]
-  (let [modified-date  (date-header response "last-modified")
+  (let [modified-date  (date-header response "Last-Modified")
         modified-since (date-header request "if-modified-since")]
     (and modified-date
          modified-since

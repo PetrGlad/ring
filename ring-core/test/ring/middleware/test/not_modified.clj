@@ -38,7 +38,7 @@
   (testing "not modified"
            (let [req #(hash-map :headers {"if-modified-since" %})
                  last-modified "Sun, 23 Sep 2012 11:00:00 GMT"
-                 h-resp {:status 200 :headers {"last-modified" last-modified} :body ""}]
+                 h-resp {:status 200 :headers {"Last-Modified" last-modified} :body ""}]
              (is (= 304 (:status (not-modified-response h-resp (req last-modified)))))
              (is (= 304 (:status (not-modified-response h-resp (req "Sun, 23 Sep 2012 11:52:50 GMT")))))
              (is (= 200 (:status (not-modified-response h-resp (req "Sun, 23 Sep 2012 10:00:50 GMT")))))))
