@@ -15,7 +15,6 @@
 (defn- not-modified-since? [request response]
   (let [modified-date  (date-header response "last-modified")
         modified-since (date-header request "if-modified-since")]
-    ; TODO Response headers lookup may not work since in map header is Camel-Cased and in fn call it is all lowercase
     (and modified-date
          modified-since
          (not (.before modified-since modified-date)))))
